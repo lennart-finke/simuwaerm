@@ -12,108 +12,134 @@ use crossterm::{
     event::{read, poll}
 };
 
+#[allow(unused_parens)]
+
 fn main() {
     let mut stdout = stdout();
 
-    stdout.execute(terminal::Clear(terminal::ClearType::All));
+    stdout.execute(terminal::Clear(terminal::ClearType::All)).ok();
 
+    // change for different plate dimensions
+    const WIDTH : usize = 25;
+    const HEIGHT : usize = 50;
 
-    const width : usize = 25;
-    const height : usize = 50;
-
+    let mut language : &str = "en";
     let mut lambda : f32 = 0.1;
-    const scale : f32= 1.001;
+    const SCALE : f32= 1.001;
 
     let mut cursor = [0, 0];
     let mut pause : bool = false;
 
-    let mut plate: Vec<f32> = vec![125.; width * height];
+    let mut plate: Vec<f32> = vec![125.; WIDTH * HEIGHT];
     let mut plate_p : Vec<f32>;
-    plate[12] = 500.;
-    plate[11 + width] = 500.;
 
     loop {
+        stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
 
-        stdout.queue(terminal::Clear(terminal::ClearType::All));
+        stdout.queue(cursor::MoveTo(0,6)).ok();
 
-        stdout.queue(cursor::MoveTo(0,6));
-        stdout.queue(Print("     SIMUWAERM v0.01\n"));
-        stdout.queue(Print("     --------- -----\n"));
-        stdout.queue(Print("     Cursor kann mit Pfeiltasten bewegt werden. \n"));
-        stdout.queue(Print("     h - erwärmen | + - Lambda erhöhen    | Esc - Beenden\n"));
-        stdout.queue(Print("     k - abkühlen | - - Lambda verringern | p   - Pausieren\n\n"));
-        stdout.queue(Print(format!("     \tLambda = {:.2}\n", lambda)));
-        for i in 0..width {
+        if (language == "de") {
+            stdout.queue(Print("     SIMUWAERM v0.01\n")).ok();
+            stdout.queue(Print("     --------- -----\n")).ok();
+            stdout.queue(Print("     Cursor kann mit Pfeiltasten bewegt werden. \n")).ok();
+            stdout.queue(Print("     h - erwärmen | + - Lambda erhöhen    | Esc - Beenden\n")).ok();
+            stdout.queue(Print("     k - abkühlen | - - Lambda verringern | p   - Pausieren\n\n")).ok();
+            stdout.queue(Print(format!("     \tLambda = {:.2}\n", lambda))).ok();
+        }
 
-            stdout.queue(Print("\n     "));
+        else if (language == "en") {
+            stdout.queue(Print("     SIMUWAERM v0.01\n")).ok();
+            stdout.queue(Print("     --------- -----\n")).ok();
+            stdout.queue(Print("     Cursor is moved with arrow keys. \n")).ok();
+            stdout.queue(Print("     h - heat | + - increase Lambda    | Esc - Exit\n")).ok();
+            stdout.queue(Print("     k - cool | - - decrease Lambda    | p   - Pause\n\n")).ok();
+            stdout.queue(Print(format!("     \tLambda = {:.2}\n", lambda))).ok();
+        }
 
-            for j in 0..height {
+        for i in 0..WIDTH {
+
+            stdout.queue(Print("\n     ")).ok();
+
+            for j in 0..HEIGHT {
                 if [j, i] == cursor {
-                    stdout.queue(SetForegroundColor(Color::Rgb{r:100, g: 250, b: 100}));
+                    stdout.queue(SetForegroundColor(Color::Rgb{r:100, g: 250, b: 100})).ok();
                 }
                 else {
-                    stdout.queue(SetForegroundColor(Color::Rgb{r:(plate[i + width * j] as u8), g: 100, b: (255. - plate[i + width * j]) as u8}));
+                    stdout.queue(SetForegroundColor(Color::Rgb{r:(plate[i + WIDTH * j] as u8), g: 100, b: (255. - plate[i + WIDTH * j]) as u8})).ok();
                 }
 
-                stdout.queue(Print('█'));
+                stdout.queue(Print('█')).ok();
             }
         }
 
-        if plate[cursor[1] +  width * cursor[0]] > 0. {
-            println!(" Temperatur am Cursor: {:.10} °K", plate[cursor[1] +  width * cursor[0]] + 158.5863008);
+        if plate[cursor[1] +  WIDTH * cursor[0]] > 0. {
+            if (language == "de") {
+                println!("\n     Temperatur am Cursor: {:.5} °K", plate[cursor[1] +  WIDTH * cursor[0]] + 158.5863008);
+            }
+
+            else if (language == "en") {
+                println!("\n     Temperature at Cursor: {:.5} °K", plate[cursor[1] +  WIDTH * cursor[0]] + 158.5863008);
+            }
         }
         else {
-            println!(" Temperatur am Cursor: {:.10} °K", 158.5863008 * scale.powf(plate[cursor[1] +  width * cursor[0]]));
-        }
+            if (language == "de") {
+                println!("\n     Temperatur am Cursor: {:.5} °K", 158.5863008 * SCALE.powf(plate[cursor[1] +  WIDTH * cursor[0]]));
+            }
 
+            else if (language == "en") {
+                println!("\n     Temperature at Cursor: {:.5} °K", 158.5863008 * SCALE.powf(plate[cursor[1] +  WIDTH * cursor[0]]));
+            }
+        }
 
         plate_p = plate.to_vec();
 
-        for i in 1..(height - 1) {
+        for i in 1..(HEIGHT - 1) {
             if pause {continue;}
-            for j in 1..(width - 1) {
-                let neighbor : f32 = ((plate[1 + j + width * i] + plate[1 + j + width * (i - 1)] + plate[1 + j + width * (i + 1)] + plate[j - 1 + width * i] + plate[j + width * (i + 1)] + plate[j - 1 + width * (i + 1)] + plate[j - 1 + width * (i - 1)] + plate[j + width * (i - 1)] ) / 8.) ;
-                plate_p[j + width * i] -= (lambda * ((plate[j + width * i] - neighbor)));
+            for j in 1..(WIDTH - 1) {
+                let neighbor : f32 = ((plate[1 + j + WIDTH * i] + plate[1 + j + WIDTH * (i - 1)] + plate[1 + j + WIDTH * (i + 1)] + plate[j - 1 + WIDTH * i] + plate[j + WIDTH * (i + 1)] + plate[j - 1 + WIDTH * (i + 1)] + plate[j - 1 + WIDTH * (i - 1)] + plate[j + WIDTH * (i - 1)] ) / 8.) ;
+                plate_p[j + WIDTH * i] -= (lambda * ((plate[j + WIDTH * i] - neighbor)));
             }
         }
-        stdout.flush();
+        stdout.queue(cursor::MoveTo(15,4)).ok(); // The cursor is still displayed, so we move it onto somewhere pretty
+        stdout.flush().ok();
 
         plate = plate_p.to_vec();
 
-        crossterm::terminal::enable_raw_mode();
+        crossterm::terminal::enable_raw_mode().ok();
+
         if poll(Duration::from_millis(100)).unwrap() {
             let event = read().unwrap();
 
-            if event == Event::Key(KeyCode::Left.into()) {
+            if (event == Event::Key(KeyCode::Left.into())) {
                 if cursor[0] > 0    {
                     cursor[0] -= 1;
                 }
             }
 
-            else if event == Event::Key(KeyCode::Right.into()) {
-                if cursor[0] < height - 1 {
+            else if (event == Event::Key(KeyCode::Right.into())) {
+                if cursor[0] < HEIGHT - 1 {
                     cursor[0] += 1;
                 }
             }
 
-            else if event == Event::Key(KeyCode::Up.into()) {
+            else if (event == Event::Key(KeyCode::Up.into())) {
                 if cursor[1] > 0 {
                     cursor[1] -= 1;
                 }
             }
 
-            else if event == Event::Key(KeyCode::Down.into()) {
-                if cursor[1] < width - 1 {
+            else if (event == Event::Key(KeyCode::Down.into())) {
+                if cursor[1] < WIDTH - 1 {
                     cursor[1] += 1;
                 }
             }
 
-            else if event == Event::Key(KeyCode::Char('h').into()) {
-                plate[cursor[1] +  width * cursor[0]] += 50.
+            else if (event == Event::Key(KeyCode::Char('h').into())) {
+                plate[cursor[1] +  WIDTH * cursor[0]] += 50.
             }
 
             else if (event == Event::Key(KeyCode::Char('c').into()) || event == Event::Key(KeyCode::Char('k').into())) {
-                plate[cursor[1] +  width * cursor[0]] -= 50.
+                plate[cursor[1] +  WIDTH * cursor[0]] -= 50.
             }
 
             else if (event == Event::Key(KeyCode::Char('+').into())) {
@@ -128,17 +154,27 @@ fn main() {
                 pause = !pause;
             }
 
+            else if (event == Event::Key(KeyCode::Char('l').into())) {
+                if (language == "de") {
+                    language = "en";
+                }
+
+                else if (language == "en") {
+                    language = "de";
+                }
+            }
+
             else if (event == Event::Key(KeyCode::Esc.into())) {
                 break;
             }
 
         } else {
-            // Timeout expired, no `Event` is available
+            // No Input was given
         }
 
-        crossterm::terminal::disable_raw_mode();
+        crossterm::terminal::disable_raw_mode().ok();
     }
 
-    crossterm::terminal::disable_raw_mode();
-    stdout.execute(terminal::Clear(terminal::ClearType::All));
+    crossterm::terminal::disable_raw_mode().ok();
+    stdout.execute(terminal::Clear(terminal::ClearType::All)).ok();
 }
