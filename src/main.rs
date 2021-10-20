@@ -19,10 +19,8 @@ fn main() {
 
     stdout.execute(terminal::Clear(terminal::ClearType::All)).ok();
     stdout.execute(terminal::SetTitle("SIMUWAERM v0.01")).ok();
-    stdout.execute(terminal::SetSize(60, 50)).ok();
+    stdout.execute(terminal::SetSize(65, 40)).ok();
 
-
-    // change for different plate dimensions
     const WIDTH : usize = 25;
     const HEIGHT : usize = 50;
 
@@ -43,7 +41,6 @@ fn main() {
             stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
             screen_dimension = terminal::size().unwrap()
         }
-        // stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
 
         stdout.queue(cursor::MoveTo(0,3)).ok();
 
