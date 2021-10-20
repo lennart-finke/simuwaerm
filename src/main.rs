@@ -1,4 +1,4 @@
-// author   : fi-le (she/her)
+// author   : fi-le
 // website  : fi-le.net
 // e-mail   : info @t fi-le.net
 // license  : MIT
