@@ -18,10 +18,15 @@ fn main() {
     let mut stdout = stdout();
 
     stdout.execute(terminal::Clear(terminal::ClearType::All)).ok();
+    stdout.execute(terminal::SetTitle("SIMUWAERM v0.01")).ok();
+    stdout.execute(terminal::SetSize(60, 50)).ok();
+
 
     // change for different plate dimensions
     const WIDTH : usize = 25;
     const HEIGHT : usize = 50;
+
+    let mut screen_dimension : (u16, u16) = terminal::size().unwrap();
 
     let mut language : &str = "en";
     let mut lambda : f32 = 0.1;
@@ -34,26 +39,30 @@ fn main() {
     let mut plate_p : Vec<f32>;
 
     loop {
-        stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
+        if (screen_dimension != terminal::size().unwrap()) {
+            stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
+            screen_dimension = terminal::size().unwrap()
+        }
+        // stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
 
-        stdout.queue(cursor::MoveTo(0,6)).ok();
+        stdout.queue(cursor::MoveTo(0,3)).ok();
 
         if (language == "de") {
             stdout.queue(Print("     SIMUWAERM v0.01\n")).ok();
             stdout.queue(Print("     --------- -----\n")).ok();
-            stdout.queue(Print("     Cursor kann mit Pfeiltasten bewegt werden. \n")).ok();
-            stdout.queue(Print("     h - erwärmen | + - Lambda erhöhen    | Esc - Beenden\n")).ok();
-            stdout.queue(Print("     k - abkühlen | - - Lambda verringern | p   - Pausieren\n\n")).ok();
-            stdout.queue(Print(format!("     \tLambda = {:.2}\n", lambda))).ok();
+            stdout.queue(Print("     Cursor kann mit Pfeiltasten bewegt werden.             \n")).ok();
+            stdout.queue(Print("     h - erwärmen | + - Lambda erhöhen    | Esc - Beenden   \n")).ok();
+            stdout.queue(Print("     k - abkühlen | - - Lambda verringern | p   - Pausieren \n\n")).ok();
+            stdout.queue(Print(format!("     \tLambda = {:.2}                               \n", lambda))).ok();
         }
 
         else if (language == "en") {
             stdout.queue(Print("     SIMUWAERM v0.01\n")).ok();
             stdout.queue(Print("     --------- -----\n")).ok();
-            stdout.queue(Print("     Cursor is moved with arrow keys. \n")).ok();
-            stdout.queue(Print("     h - heat | + - increase Lambda    | Esc - Exit\n")).ok();
-            stdout.queue(Print("     k - cool | - - decrease Lambda    | p   - Pause\n\n")).ok();
-            stdout.queue(Print(format!("     \tLambda = {:.2}\n", lambda))).ok();
+            stdout.queue(Print("     Cursor is moved with arrow keys.                       \n")).ok();
+            stdout.queue(Print("     h - heat | + - increase Lambda    | Esc - Exit         \n")).ok();
+            stdout.queue(Print("     k - cool | - - decrease Lambda    | p   - Pause        \n\n")).ok();
+            stdout.queue(Print(format!("     \tLambda = {:.2}                               \n", lambda))).ok();
         }
 
         for i in 0..WIDTH {
@@ -74,20 +83,20 @@ fn main() {
 
         if plate[cursor[1] +  WIDTH * cursor[0]] > 0. {
             if (language == "de") {
-                println!("\n     Temperatur am Cursor: {:.5} °K", plate[cursor[1] +  WIDTH * cursor[0]] + 158.5863008);
+                println!("\n     Temperatur am Cursor: {:>5} °K                                     ", plate[cursor[1] +  WIDTH * cursor[0]] + 158.5863008);
             }
 
             else if (language == "en") {
-                println!("\n     Temperature at Cursor: {:.5} °K", plate[cursor[1] +  WIDTH * cursor[0]] + 158.5863008);
+                println!("\n     Temperature at Cursor: {:>5} °K                                    ", plate[cursor[1] +  WIDTH * cursor[0]] + 158.5863008);
             }
         }
         else {
             if (language == "de") {
-                println!("\n     Temperatur am Cursor: {:.5} °K", 158.5863008 * SCALE.powf(plate[cursor[1] +  WIDTH * cursor[0]]));
+                println!("\n     Temperatur am Cursor: {:>5} °K                                     ", 158.5863008 * SCALE.powf(plate[cursor[1] +  WIDTH * cursor[0]]));
             }
 
             else if (language == "en") {
-                println!("\n     Temperature at Cursor: {:.5} °K", 158.5863008 * SCALE.powf(plate[cursor[1] +  WIDTH * cursor[0]]));
+                println!("\n     Temperature at Cursor: {:>5} °K                                    ", 158.5863008 * SCALE.powf(plate[cursor[1] +  WIDTH * cursor[0]]));
             }
         }
 
@@ -100,7 +109,7 @@ fn main() {
                 plate_p[j + WIDTH * i] -= (lambda * ((plate[j + WIDTH * i] - neighbor)));
             }
         }
-        stdout.queue(cursor::MoveTo(15,4)).ok(); // The cursor is still displayed, so we move it onto somewhere pretty
+        stdout.queue(cursor::MoveTo(15,3)).ok(); // The cursor is still displayed, so we move it onto somewhere pretty
         stdout.flush().ok();
 
         plate = plate_p.to_vec();
