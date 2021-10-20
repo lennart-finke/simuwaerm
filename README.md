@@ -20,3 +20,10 @@ git clone https://github.com/file-acomplaint/simuwaerm.git
 cd simuwaerm
 cargo run --release
 ```
+
+## Compatibility
+Simuwaerm runs on UNIX and Windows, about equally well. Above is a screenshot on the Command Prompt, below on KDE Konsole:
+
+![screenshot](https://fi-le.net/images/simuwaerm2.png?raw=true)
+
+If you happen to use a niche operating system, say macOS, please try compiling and send me a funny caption of what happens. Or do a pull request, I suppose.
