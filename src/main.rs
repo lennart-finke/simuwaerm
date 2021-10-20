@@ -1,3 +1,8 @@
+// author   : fi-le (she/her)
+// website  : fi-le.net
+// e-mail   : info @t fi-le.net
+// license  : MIT
+
 use std::io::{stdout, Write};
 use std::time::Duration;
 
@@ -18,8 +23,8 @@ fn main() {
     let mut stdout = stdout();
 
     stdout.execute(terminal::Clear(terminal::ClearType::All)).ok();
-    stdout.execute(terminal::SetTitle("SIMUWAERM v0.01")).ok();
-    stdout.execute(terminal::SetSize(65, 40)).ok();
+    stdout.execute(terminal::SetTitle("SIMUWAERM v0.01")).ok();     // Inexplicably doesn't work on UNIX
+    stdout.execute(terminal::SetSize(65, 40)).ok();                 // Inexplicably doesn't work on UNIX
 
     const WIDTH : usize = 25;
     const HEIGHT : usize = 50;
@@ -36,10 +41,17 @@ fn main() {
     let mut plate: Vec<f32> = vec![125.; WIDTH * HEIGHT];
     let mut plate_p : Vec<f32>;
 
+    let mut counter : u8 = 0; // We refresh once in a while as UNIX terminals like to leave fragments. Windows terminals don't handle clearing the screen well, so we only do it when needed. Conditional compilation would be the better option.
+
     loop {
-        if (screen_dimension != terminal::size().unwrap()) {
+        if (screen_dimension != terminal::size().unwrap() || counter == 150) {
             stdout.queue(terminal::Clear(terminal::ClearType::All)).ok();
-            screen_dimension = terminal::size().unwrap()
+            screen_dimension = terminal::size().unwrap();
+            counter = 0; // Deliberate integer overflow would have been fun, but it's of course not very Rust-y.
+        }
+
+        else {
+            counter += 1;
         }
 
         stdout.queue(cursor::MoveTo(0,3)).ok();
@@ -63,7 +75,6 @@ fn main() {
         }
 
         for i in 0..WIDTH {
-
             stdout.queue(Print("\n     ")).ok();
 
             for j in 0..HEIGHT {
@@ -111,7 +122,7 @@ fn main() {
 
         plate = plate_p.to_vec();
 
-        crossterm::terminal::enable_raw_mode().ok();
+        crossterm::terminal::enable_raw_mode().ok(); // For UNIX terminals
 
         if poll(Duration::from_millis(100)).unwrap() {
             let event = read().unwrap();
