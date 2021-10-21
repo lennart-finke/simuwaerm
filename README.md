@@ -2,7 +2,8 @@
 
 Simuwaerm is a simple heat simulation written in pure Rust. 
 
-![screenshot](https://fi-le.net/images/simuwaerm.png?raw=true)
+![screenshot](https://fi-le.net/images/simuwaerm2.png?raw=true)
+
 
 ## How it works
 The border is fixed, the middle tiles simulate a conductive plate. If you leave it be, it numerically solves the border condition, so that the middle has Laplacian 0 everywhere. You can manually add heat or cold with keys `h` and `k`.  
@@ -22,8 +23,8 @@ cargo run --release
 ```
 
 ## Compatibility
-Simuwaerm runs on UNIX and Windows, about equally well. Above is a screenshot on the Command Prompt, below on KDE Konsole:
+Simuwaerm runs on UNIX and Windows, about equally well. Above is a screenshot on KDE Konsole, below on the Command Prompt:
 
-![screenshot](https://fi-le.net/images/simuwaerm2.png?raw=true)
+![screenshot](https://fi-le.net/images/simuwaerm3.png?raw=true)
 
 If you happen to use a niche operating system, say macOS, please try compiling and send me a funny caption of what happens. Or do a pull request, I suppose.
