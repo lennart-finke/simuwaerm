@@ -1,4 +1,5 @@
 # SIMUWAERM
+![Crates.io](https://img.shields.io/crates/v/simuwaerm?logo=rust&style=flat-square)![GitHub](https://img.shields.io/github/license/file-acomplaint/simuwaerm?color=pink&style=flat-square)
 
 Simuwaerm is a simple heat simulation written in pure Rust. 
 
@@ -13,13 +14,11 @@ The border is fixed, the middle tiles simulate a conductive plate. If you leave 
 The language can be switched to German with `l`.
 
 ## Installation
-You can download a binary ![here](https://fi-le.net/warehouse/simuwaerm.zip).
+You can download a binary ![here](https://github.com/file-acomplaint/simuwaerm/releases).
 
-If you want to build it yourself, you can run:
+If you have `cargo`, simply execute:
 ```bash
-git clone https://github.com/file-acomplaint/simuwaerm.git
-cd simuwaerm
-cargo run --release
+cargo install simuwaerm
 ```
 
 ## Compatibility
@@ -27,4 +26,4 @@ Simuwaerm runs on UNIX and Windows, about equally well. Above is a screenshot on
 
 ![screenshot](https://fi-le.net/images/simuwaerm3.png?raw=true)
 
-If you happen to use a niche operating system, say macOS, please try compiling and send me a funny caption of what happens. Or do a pull request, I suppose.
+If you happen to use a niche operating system, say macOS, please try compiling and send me a funny caption of what happens. (To clarify, I love you mac people just as much, I just don't have the hardware to try it out. Any help with testing is appreciated!)
